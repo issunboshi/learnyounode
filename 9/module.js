@@ -1,28 +1,33 @@
 var httpGet = function(resources, callback) {
 	var http = require('http');
-	console.log('hello');
-	console.log(resources.forEach(processGet));
+	var	message = [];
+	var returnedMessages = [];
+	var messageCount = 0;
+	for(var i = 0; i < resources.length; i++) {
+		var processGet = function(resource) {
+			http.get(resource, function (response) {
+				response.setEncoding('utf8');
 
-	var processGet = function() {
-		http.get(resource, function (response) {
-			var	message = '';
-			var	messageLength = 0;
-			response.setEncoding('utf8');
+				response.on('data', function(data) {
+					message[i] += data;
+				});
 
-			response.on('data', function(data) {
-				message += data;
+				response.on('error', function(err) {
+					return console.log(err);
+				});
+
+				response.on('end', function() {
+					returnedMessages.push(message[i]);
+					messageCount++ ;
+					if(messageCount === resources.length){
+						return callback(returnedMessages);		
+					}
+				})
 			});
-
-			response.on('error', function(err) {
-				return console.log(err);
-			});
-
-			response.on('end', function() {
-				messageLength = message.length;
-			 	return callback(message, messageLength);
-			})
-		});
+		}
+		processGet(resources[i]);
 	}
+	
 }
 
 module.exports = httpGet;
