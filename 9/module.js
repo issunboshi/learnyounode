@@ -1,15 +1,14 @@
 var httpGet = function(resources, callback) {
 	var http = require('http');
 	var	message = [];
-	var returnedMessages = [];
 	var messageCount = 0;
 	for(var i = 0; i < resources.length; i++) {
-		var processGet = function(resource) {
+		var processGet = function(resource, index) {
 			http.get(resource, function (response) {
 				response.setEncoding('utf8');
 
 				response.on('data', function(data) {
-					message[i] += data;
+					message[index] += data;
 				});
 
 				response.on('error', function(err) {
@@ -17,17 +16,15 @@ var httpGet = function(resources, callback) {
 				});
 
 				response.on('end', function() {
-					returnedMessages.push(message[i]);
-					messageCount++ ;
-					if(messageCount === resources.length){
-						return callback(returnedMessages);		
+					messageCount++;
+					if(messageCount === resources.length) {
+						return callback(message);
 					}
 				})
 			});
 		}
-		processGet(resources[i]);
+		processGet(resources[i], i);
 	}
-	
 }
 
 module.exports = httpGet;
