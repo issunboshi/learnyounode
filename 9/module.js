@@ -3,6 +3,7 @@ var httpGet = function(resources, callback) {
 	var	message = [];
 	var messageCount = 0;
 	for(var i = 0; i < resources.length; i++) {
+		message.push('');
 		var processGet = function(resource, index) {
 			http.get(resource, function (response) {
 				response.setEncoding('utf8');
@@ -17,9 +18,8 @@ var httpGet = function(resources, callback) {
 
 				response.on('end', function() {
 					messageCount++;
-					if(messageCount === resources.length) {
+					if(messageCount === resources.length)
 						return callback(message);
-					}
 				})
 			});
 		}
